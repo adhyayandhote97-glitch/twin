@@ -291,11 +291,12 @@
     if (body === "earth") {
       rows = row("Type", esc(s.category).replace(" / ", "<br>")) + row("Location", esc(s.region)) +
         row("Matches", `${s.dims.length} of 8 analog dimensions`) +
+        row("Twin of", s.twins.length ? esc(s.twins.map(id => findAny(id).site.name.split(/[,(&:]/)[0].trim()).join(", ")) : "Citation pending") +
         row("Analog for", `<span class="pill ${s.analog}">${s.analog === "Both" ? "Moon &amp; Mars" : s.analog}</span>`);
       desc = s.why;
     } else {
-      const names = s.earthAnalogs.map(id => findSite("earth", id).name.split(/[,(:]/)[0].trim());
-      rows = row("Feature", esc(s.type)) + row("Explored by", esc(s.explored)) + row("Earth analogs", esc(names.join(", "))) +
+      const names = s.twins.map(id => findSite("earth", id).name.split(/[,(:]/)[0].trim());
+      rows = row("Feature", esc(s.type)) + row("Explored by", esc(s.explored)) + row("Earth twins", names.length ? esc(names.join(", ")) : "Citation pending") +
         row("Status", `<span class="pill" style="background:${PLANET_STATUS[s.status].color}">${PLANET_STATUS[s.status].label}</span>`);
       desc = s.summary + " " + s.details;
     }

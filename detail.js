@@ -23,7 +23,7 @@ function renderDetail(body, id) {
     eyebrow = `${label} · ${esc(s.type)}`;
     lede = s.summary;
     tags = `<span class="pill" style="background:${PLANET_STATUS[s.status].color}">${PLANET_STATUS[s.status].label}</span>
-            <span class="pill ghost">${s.earthAnalogs.length} Earth analog${s.earthAnalogs.length > 1 ? "s" : ""} on the map</span>`;
+            <span class="pill ghost">${s.twins.length ? `${s.twins.length} Earth twin${s.twins.length > 1 ? "s" : ""}` : "Twin citation pending"}</span>`;
   }
   const ph = photo(body, s.id);
   const heroBg = ph ? `background-image:url('${ph.src}')` : (body === "mars" ? "background:linear-gradient(135deg,#5a1c10,#1a0805)" : "background:linear-gradient(135deg,#333,#0b0b0b)");
@@ -37,6 +37,11 @@ function renderDetail(body, id) {
       <div class="thumb" ${p ? `style="background-image:url('${p.src}')"` : ""}><span class="badge"><i class="dot" style="${dotStyle(color)}"></i>${esc(badge)}</span></div>
       <div class="lc-body"><h4>${esc(site.name)}</h4><p>${esc(text)}</p></div></a>`;
   };
+
+  // Twins: cited pairings only. Older suggested pairings without a citation are listed as pending.
+  const shortName = x => x.name.split(/[,(&:]/)[0].trim();
+  const twinSites = s.twins.map(findAny).filter(Boolean);
+  const pendingLinks = list => list.map(c => `<a href="#site-${c.body}-${c.site.id}">${esc(shortName(c.site))}</a>`).join(", ");
 
   // Article
   let html = "";
@@ -52,13 +57,12 @@ function renderDetail(body, id) {
     html += `<section><h2>What it copies well</h2><div class="dims">
       ${DIMENSIONS.map(d => { const on = s.dims.includes(d.key); return `<div class="dimtile ${on ? "" : "off"}"><span class="mark">${on ? "&#10003;" : ""}</span>${esc(d.label)}</div>`; }).join("")}
     </div></section>`;
-    const cps = counterpartsFor(s.id);
-    if (cps.length) {
-      const where = cps.every(c => c.body === "moon") ? "Moon" : cps.every(c => c.body === "mars") ? "Mars" : "Moon and Mars";
-      html += `<section><h2>Matching places on the ${where === "Mars" ? "Mars globe" : where === "Moon" ? "Moon globe" : "Moon and Mars globes"}</h2>
-        <p>These places on the ${where} are studied or rehearsed using ${esc(s.name.split(/[,(]/)[0].trim())}.</p>
-        <div class="links">${cps.map(c => linkCard(c.body, c.site, c.site.summary)).join("")}</div></section>`;
-    }
+    const pending = counterpartsFor(s.id).filter(c => !s.twins.includes(c.site.id));
+    html += `<section class="twins"><h2>Twin of &rarr; ${twinSites.length ? twinSites.map(t => esc(shortName(t.site))).join(", ") : "citation pending"}</h2>
+      ${twinSites.length
+        ? `<p>${esc(s.twinReason)}</p><div class="links">${twinSites.map(t => linkCard(t.body, t.site, t.site.summary)).join("")}</div>`
+        : `<p class="note">No twin on the Moon or Mars has a citation yet.</p>`}
+      ${pending.length ? `<p class="note">Also suggested, citation pending: ${pendingLinks(pending)}.</p>` : ""}</section>`;
     html += `<section><h2>Missions and programs</h2><p>${esc(s.usedBy)}.</p></section>`;
     html += `<section><h2>Where the analogy breaks down</h2>
       <div class="callout"><span class="k">At this site</span>${esc(s.limits)}.</div>
@@ -66,11 +70,13 @@ function renderDetail(body, id) {
       <ul class="limits">${EARTH_LIMITS.map(([k, v]) => `<li><b>${esc(k)}.</b> ${esc(v)}</li>`).join("")}</ul></section>`;
   } else {
     html += `<section><h2>About this place</h2><p>${esc(s.summary)}</p><p>${esc(s.details)}</p></section>`;
-    const earth = s.earthAnalogs.map(eid => findSite("earth", eid));
-    html += `<section><h2>Where to find it on Earth</h2>
-      <p>Scientists and astronauts use these places on Earth to study ${esc(s.name.split(/[(&]/)[0].trim())} or to rehearse exploring something like it.</p>
-      <div class="links">${earth.map(e => linkCard("earth", e, (body === "moon" ? e.moon : e.mars) || e.why)).join("")}</div>
-      ${s.otherAnalogs ? `<p class="note">Also: ${esc(s.otherAnalogs)}</p>` : ""}</section>`;
+    const pending = s.earthAnalogs.filter(eid => !s.twins.includes(eid)).map(eid => ({ body: "earth", site: findSite("earth", eid) }));
+    html += `<section class="twins"><h2>Earth twins</h2>
+      ${twinSites.length
+        ? `<p>${esc(s.twinReason)}</p><div class="links">${twinSites.map(t => linkCard(t.body, t.site, (body === "moon" ? t.site.moon : t.site.mars) || t.site.why)).join("")}</div>`
+        : `<p class="note">No Earth twin has a citation yet.</p>`}
+      ${pending.length ? `<p class="note">Also suggested, citation pending: ${pendingLinks(pending)}.</p>` : ""}
+      ${s.otherAnalogs ? `<p class="note">Elsewhere on Earth: ${esc(s.otherAnalogs)}</p>` : ""}</section>`;
     const relevant = body === "moon" ? EARTH_LIMITS.filter(([k]) => !/Martian/.test(k)) : EARTH_LIMITS.filter(([k]) => !/shadowed|Regolith/.test(k));
     html += `<section><h2>What Earth can't copy</h2>
       <ul class="limits">${relevant.map(([k, v]) => `<li><b>${esc(k)}.</b> ${esc(v)}</li>`).join("")}</ul></section>`;
