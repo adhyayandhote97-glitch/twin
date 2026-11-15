@@ -3,6 +3,7 @@
 //   #earth-<id> | #moon-<id> | #mars-<id>  world view with a site card open
 //   #site-<world>-<id>                     "Learn more" detail view
 //   #references                            every citation on the site
+//   #about                                 method and limits
 (function () {
   const KIND = {
     "Impact crater": "Impact craters",
@@ -386,6 +387,12 @@
       if (fresh) renderReferences();
       const target = h.startsWith("refs-") && document.getElementById(h);
       if (target) target.scrollIntoView(); else window.scrollTo(0, 0);
+      return;
+    }
+    if (h === "about") {
+      document.body.classList.add("detail-mode");
+      $("app").hidden = true; $("detail").hidden = false;
+      renderAbout(); window.scrollTo(0, 0);
       return;
     }
     const m = h.match(/^site-(earth|moon|mars)-([a-z0-9]+)$/);

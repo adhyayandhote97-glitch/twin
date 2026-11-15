@@ -347,7 +347,7 @@ aside.glance { position: sticky; top: 24px; align-self: start; }
 }
 
 /* ---------- Sources and references ---------- */
-.refs-link { display: inline-block; margin: -12px 0 24px; color: #d6d6d6; font-size: 13.5px; letter-spacing: 0.04em; text-decoration: underline; text-underline-offset: 4px; text-decoration-color: #555; }
+.refs-link { display: inline-block; margin: -12px 18px 24px 0; color: #d6d6d6; font-size: 13.5px; letter-spacing: 0.04em; text-decoration: underline; text-underline-offset: 4px; text-decoration-color: #555; }
 .refs-link:hover { color: #fff; text-decoration-color: #fff; }
 .detail .cites { margin: 0; padding-left: 0; list-style: none; }
 .detail .cites li { font-size: 15.5px; line-height: 1.6; margin: 0 0 12px; padding-left: 2em; text-indent: -2em; overflow-wrap: anywhere; }
@@ -376,3 +376,4 @@ aside.glance { position: sticky; top: 24px; align-self: start; }
 .rank li.unrated { opacity: .72; }
 .rank li.unrated .rscore small { font-size: 12px; letter-spacing: .04em; text-transform: uppercase; }
 .cmp-method a { color: inherit; }
+.refs-wrap.about p { max-width: 720px; font-size: 17px; line-height: 1.7; margin: 0; }

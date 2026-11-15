@@ -62,6 +62,32 @@ function renderReferences() {
     <footer>TWIN — Terrestrial World Identification Network.</footer>`;
 }
 
+function renderAbout() {
+  document.title = "About · TWIN";
+  const all = [...EARTH_SITES, ...MOON_SITES, ...MARS_SITES];
+  const pairs = EARTH_SITES.reduce((n, s) => n + s.twins.length, 0);
+  const cited = all.filter(s => s.sources.length).length;
+  document.getElementById("detail").innerHTML = `
+    <header class="refs-head">
+      <a class="refs-back" href="#earth"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M15 18l-6-6 6-6"/></svg>Back to the globe</a>
+      <h1>About TWIN</h1>
+      <p>TWIN, the Terrestrial World Identification Network, matches places on Earth to places on the Moon and Mars, so astronauts and rovers can practise here first. It was made for the NASA Space Apps Challenge 2026 and is an independent project: it is not a NASA product and NASA has not endorsed it.</p>
+    </header>
+    <div class="refs-wrap about">
+      <section><h2>How a twin is made</h2>
+        <p>A pairing appears only if it can be cited. Either one source links both places directly, or the two places share a feature type and each is cited on its own, such as a lava tube with skylights on Earth and on Mars. ${pairs} Earth-to-Moon or Earth-to-Mars links are listed this way. Pairs that could not be cited are left out and the page says &ldquo;citation pending&rdquo;.</p></section>
+      <section><h2>How Compare &amp; rank scores</h2>
+        <p>Each Earth site is ticked or not on eight analog dimensions (geology and mineralogy, terrain, temperature and light, water and ice, dust and wind, biology, caves and subsurface, and mission operations), taken from the team&rsquo;s research sheet. For the Moon or Mars as a whole, or for one chosen place, TWIN weights those dimensions on a 0&ndash;5 scale. A site&rsquo;s score is the weighted share of dimensions it matches, times 100, plus 8 points if it is a cited twin of the chosen place. The weights are TWIN&rsquo;s own choices and you can change them in the panel. The ticks are coarse, so ties are common. Sites not listed as an analog for the chosen world are marked &ldquo;not scored&rdquo;.</p></section>
+      <section><h2>Coordinates and imagery</h2>
+        <p>Moon and Mars positions use planetocentric latitude and east-positive longitude from &minus;180&deg; to 180&deg;. Feature positions follow the IAU Gazetteer of Planetary Nomenclature; landing sites follow the mission records. The Moon and Mars globes use the LRO WAC and Viking colourised mosaics. Missing values are shown as &ldquo;n.d.&rdquo; or &ldquo;citation pending&rdquo;, never as zero.</p></section>
+      <section><h2>Sources</h2>
+        <p>${cited} of ${all.length} places have at least one source listed on their page. Every source is listed in Harvard style on the <a href="#references">References</a> page.</p></section>
+      <section><h2>Privacy and security</h2>
+        <p>TWIN is a static site. It sets no cookies, collects no personal data and loads every script, font and image from its own address.</p></section>
+    </div>
+    <footer>TWIN &mdash; Terrestrial World Identification Network. <a href="#references">References</a></footer>`;
+}
+
 function renderDetail(body, id) {
   const esc = s => String(s).replace(/[&<>"']/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
   const s = findSite(body, id);
