@@ -38,6 +38,7 @@ body.resizing #globe { pointer-events: none; }
 .brand-mark { width: 52px; height: 33px; flex: none; }
 .brand-name { color: #fff; font-size: 26px; font-weight: 700; letter-spacing: 0.26em; }
 .sidebar h1 { font-size: 21px; font-weight: 600; line-height: 1.25; margin: 18px 0 10px; letter-spacing: -0.005em; color: #e8e8e8; }
+.sidebar .tagline { font-family: var(--serif); font-size: 17.5px; line-height: 1.45; color: #fff; margin: 0 0 14px; }
 .sidebar .sub { color: #b9b9b9; font-size: 14.5px; line-height: 1.55; margin: 0 0 26px; }
 .rule { border: 0; border-top: 1px solid var(--line); margin: 0; }
 .count-row { display: flex; justify-content: space-between; align-items: center; padding: 22px 0 24px; }
