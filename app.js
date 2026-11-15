@@ -29,7 +29,7 @@
   let globe = null, globeEls = {}, countries = null;
 
   const $ = id => document.getElementById(id);
-  const esc = s => String(s).replace(/[&<>"]/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]));
+  const esc = s => String(s).replace(/[&<>"']/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
   const siteColor = (body, s) => body === "earth" ? ANALOG_COLORS[s.analog] : PLANET_STATUS[s.status].color;
   const setHash = h => { if (location.hash !== "#" + h) history.replaceState(null, "", "#" + h); };
 

@@ -13,7 +13,7 @@
   const STORE = "twin-compare";
 
   const $ = id => document.getElementById(id);
-  const esc = s => String(s).replace(/[&<>"]/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]));
+  const esc = s => String(s).replace(/[&<>"']/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
   const site = id => findSite("earth", id);
   const short = s => s.name.split(/[,(:]/)[0].trim();
 
