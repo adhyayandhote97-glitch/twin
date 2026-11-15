@@ -839,35 +839,10 @@ function findAny(id) {
 }
 
 // ---------- Compare & rank ----------
-// TWIN's editorial ratings (0–10) of how closely each Earth site matches the Moon and
-// Mars on each analog dimension, in DIMENSIONS order:
-//   [geo, terrain, temp, water, dust, bio, caves, ops]
-// For the Moon, "water" rewards dryness/polar ice and "bio" rewards barren, lifeless ground.
-// Estimates are based on the source sheet's dimension matches plus published analog research.
-const ANALOG_SCORES = {
-  haughton:    { moon: [7, 6, 6, 4, 4, 5, 1, 7], mars: [8, 8, 8, 8, 6, 8, 2, 9] },
-  iceland:     { moon: [8, 7, 4, 2, 6, 6, 7, 9], mars: [8, 8, 5, 8, 7, 6, 7, 8] },
-  ladakh:      { moon: [3, 5, 6, 4, 5, 4, 1, 6], mars: [7, 7, 8, 7, 6, 7, 1, 7] },
-  lanzarote:   { moon: [7, 6, 3, 3, 6, 6, 8, 7], mars: [7, 6, 3, 3, 6, 5, 8, 6] },
-  maunakea:    { moon: [8, 6, 5, 2, 8, 6, 6, 9], mars: [8, 7, 5, 3, 7, 4, 6, 8] },
-  lavabeds:    { moon: [6, 4, 4, 2, 3, 3, 9, 5], mars: [6, 4, 4, 5, 3, 7, 9, 5] },
-  lonar:       { moon: [7, 6, 2, 1, 3, 2, 1, 5], mars: [8, 6, 2, 6, 2, 7, 1, 5] },
-  erebus:      { moon: [4, 3, 6, 2, 2, 2, 6, 5], mars: [6, 4, 7, 7, 2, 8, 7, 6] },
-  dryvalleys:  { moon: [3, 5, 7, 5, 4, 7, 2, 6], mars: [8, 9, 9, 9, 8, 9, 3, 8] },
-  atacama:     { moon: [3, 5, 4, 6, 6, 8, 2, 6], mars: [9, 8, 7, 8, 8, 10, 3, 9] },
-  qaidam:      { moon: [2, 5, 5, 5, 6, 6, 1, 4], mars: [7, 9, 7, 7, 9, 7, 1, 7] },
-  deathvalley: { moon: [3, 5, 3, 5, 5, 5, 1, 5], mars: [7, 7, 4, 7, 7, 5, 1, 6] },
-  kutch:       { moon: [1, 3, 2, 3, 3, 3, 0, 3], mars: [8, 6, 3, 7, 4, 7, 0, 5] },
-  svalbard:    { moon: [3, 4, 6, 3, 2, 2, 1, 5], mars: [8, 6, 7, 7, 3, 7, 2, 8] },
-  riotinto:    { moon: [1, 2, 1, 1, 1, 1, 3, 3], mars: [9, 4, 2, 8, 2, 9, 5, 7] },
-  meteor:      { moon: [7, 9, 4, 4, 5, 6, 0, 8], mars: [6, 8, 3, 2, 4, 3, 0, 5] },
-  mistastin:   { moon: [9, 6, 4, 3, 3, 3, 0, 6], mars: [5, 5, 4, 3, 2, 2, 0, 3] },
-  sfvf:        { moon: [8, 9, 4, 3, 8, 5, 3, 9], mars: [5, 6, 3, 2, 6, 3, 3, 5] },
-  cratersmoon: { moon: [8, 7, 4, 3, 6, 6, 8, 8], mars: [5, 5, 3, 2, 5, 4, 7, 5] },
-  sudbury:     { moon: [8, 3, 2, 2, 1, 1, 4, 4], mars: [5, 2, 1, 3, 1, 2, 4, 2] }
-};
-
-// How much each dimension counts (0–5) for each benchmark. Unlisted dimensions count 0.5.
+// Scores are built from each Earth site's `dims` ticks (from the research sheet), the weights
+// below, and cited twin links. There are no hand-entered ratings.
+// How much each dimension counts (0–5) for each benchmark: TWIN's stated method, shown in the
+// panel as "Ranked by" and adjustable there. Unlisted dimensions count 0.5.
 const BENCHMARKS = {
   moon: {
     overall: { label: "The Moon as a whole", blurb: "Weights rock type, terrain and crew operations most: what matters for landing on, walking across and sampling the lunar surface.",

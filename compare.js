@@ -1,11 +1,14 @@
 // Compare & rank: pick two or more Earth sites and a benchmark (the Moon, Mars, or a
 // specific place on either), then rank the sites by how closely they match it.
-// Uses ANALOG_SCORES and BENCHMARKS from data.js. app.js calls the hooks on window.Compare.
+// Every score comes from data shown elsewhere on the site: each site's dimension ticks (`dims`,
+// from the research sheet), the benchmark weights in BENCHMARKS, and cited twin links (`twins`).
+// A site the sheet does not list as an analog for the chosen world gets no score (null), not zero.
+// app.js calls the hooks on window.Compare.
 (function () {
   const DKEYS = DIMENSIONS.map(d => d.key);
-  const MOON_LABEL = { temp: "Cold, light & extremes", water: "Dryness & polar ice", bio: "Barren, lifeless ground" };
-  const dimLabel = (body, k) => (body === "moon" && MOON_LABEL[k]) || DIMENSIONS.find(d => d.key === k).label;
-  const LISTED_BONUS = 8;
+  const dimLabel = (body, k) => DIMENSIONS.find(d => d.key === k).label;
+  const LISTED_BONUS = 8;   // points added when the site is a cited twin of the chosen place
+  const worldName = () => C.body === "moon" ? "the Moon" : "Mars";
   const EXAMPLE = ["atacama", "dryvalleys", "iceland", "deathvalley"];
   const STORE = "twin-compare";
 
@@ -20,7 +23,7 @@
     if (saved) {
       C.body = saved.body === "moon" ? "moon" : "mars";
       C.bench = saved.bench === "overall" || BENCHMARKS[C.body].places[saved.bench] ? saved.bench : "overall";
-      C.ids = (saved.ids || []).filter(id => ANALOG_SCORES[id]);
+      C.ids = (saved.ids || []).filter(id => findSite("earth", id));
     }
   } catch (e) { /* storage unavailable */ }
   const save = () => { try { localStorage.setItem(STORE, JSON.stringify({ body: C.body, bench: C.bench, ids: C.ids })); } catch (e) {} };
@@ -35,32 +38,48 @@
   const benchName = () => C.bench === "overall" ? BENCHMARKS[C.body].overall.label : benchSite().name;
 
   function score(id) {
-    const r = ANALOG_SCORES[id][C.body];
+    const s = site(id);
+    const parts = DKEYS.map(k => ({ k, on: s.dims.includes(k), w: C.w[k] }));
+    // The sheet marks each site as an analog for the Moon, Mars or both. Outside that, there is no rating.
+    const rated = s.analog === "Both" || s.analog.toLowerCase() === C.body;
+    if (!rated) return { id, rated: false, base: null, total: null, listed: false, parts };
     let num = 0, den = 0;
-    DKEYS.forEach((k, i) => { num += C.w[k] * r[i]; den += C.w[k]; });
-    const base = den ? (num / den) * 10 : 0;
+    for (const p of parts) { num += p.on ? p.w : 0; den += p.w; }
+    const base = den ? (num / den) * 100 : null;
     const bs = benchSite();
-    const listed = !!(bs && bs.earthAnalogs.includes(id));
-    return { id, base, total: Math.min(100, Math.round(base + (listed ? LISTED_BONUS : 0))), listed,
-      parts: DKEYS.map((k, i) => ({ k, r: r[i], w: C.w[k] })) };
+    const listed = !!(bs && bs.twins.includes(id));
+    return { id, rated: true, base, listed, parts,
+      total: base == null ? null : Math.min(100, Math.round(base + (listed ? LISTED_BONUS : 0))) };
   }
 
   function ranking() {
-    const rows = C.ids.map(score).sort((a, b) => b.total - a.total || b.base - a.base || short(site(a.id)).localeCompare(short(site(b.id))));
-    rows.forEach((row, i) => { row.rank = i && row.total === rows[i - 1].total ? rows[i - 1].rank : i + 1; });
+    const rows = C.ids.map(score).sort((a, b) => (b.rated - a.rated) || b.total - a.total || b.base - a.base || short(site(a.id)).localeCompare(short(site(b.id))));
+    let prev = null;
+    rows.forEach((row, i) => {
+      if (!row.rated) { row.rank = null; return; }
+      row.rank = prev && row.total === prev.total ? prev.rank : i + 1;
+      prev = row;
+    });
     return rows;
   }
 
   function verdict(row) {
+    if (!row.rated) return `The research sheet lists this site as an analog for ${site(row.id).analog === "Moon" ? "the Moon" : "Mars"} only, so it is not scored against ${worldName()}.`;
     const counted = row.parts.filter(p => p.w > 0);
     if (!counted.length) return "";
-    const strong = [...counted].sort((a, b) => b.r * b.w - a.r * a.w || b.r - a.r).slice(0, 2).filter(p => p.r >= 6);
-    const important = counted.filter(p => p.w >= 2);
-    const weak = [...(important.length ? important : counted)].sort((a, b) => a.r - b.r)[0];
     const name = p => dimLabel(C.body, p.k).toLowerCase();
-    let out = strong.length ? `Strongest on ${strong.map(name).join(" and ")}.` : "No strong matches on the dimensions that count most.";
-    if (weak && weak.r <= 4 && !strong.includes(weak)) out += ` Weakest on ${name(weak)}.`;
+    const hit = counted.filter(p => p.on).sort((a, b) => b.w - a.w).slice(0, 3);
+    const miss = counted.filter(p => !p.on).sort((a, b) => b.w - a.w)[0];
+    let out = hit.length ? `Matches ${hit.map(name).join(", ")}.` : "Matches none of the dimensions that count here.";
+    if (miss && miss.w >= 2) out += ` No match on ${name(miss)}.`;
     return out;
+  }
+
+  // The actual parameters and weights behind the current ranking.
+  function rankedBy() {
+    const ws = DKEYS.filter(k => C.w[k] > 0).sort((a, b) => C.w[b] - C.w[a]).map(k => `${esc(dimLabel(C.body, k))} &times;${C.w[k]}`).join(" &middot; ");
+    const bs = benchSite();
+    return `<p class="cmp-rankedby"><strong>Ranked by:</strong> the weighted share of analog dimensions each site matches. ${ws || "No dimensions switched on"}${bs ? `; +${LISTED_BONUS} points for a cited twin of ${esc(short(bs))}` : ""}.</p>`;
   }
 
   // ---------- Rendering ----------
@@ -135,7 +154,7 @@
         <div id="cmp-results"></div>
       </section>
 
-      <p class="cmp-method"><strong>How scores work.</strong> Each site is rated 0–10 on the eight analog dimensions, separately for the Moon and for Mars. These ratings are TWIN's estimates, based on the source sheet and published analog research. A site's score is the weighted average of its ratings, scaled to 100. Choosing a specific place changes the weights to what matters there, and sites that researchers already use as an analog for that place get a +${LISTED_BONUS} bonus.</p>`;
+      <p class="cmp-method"><strong>How scores work.</strong> Each Earth site either matches or does not match each of the eight analog dimensions. Those ticks come from the team research sheet and are shown on every site page. A site's score is the weighted share of dimensions it matches, out of 100. The weights are TWIN's judgement of what matters for each benchmark, shown above and adjustable in step 3. A site with a cited twin link to the chosen place gets +${LISTED_BONUS}. Sites the sheet does not list as an analog for the chosen world are not scored. <a href="#references">References</a></p>`;
     renderResults();
   }
 
@@ -149,30 +168,35 @@
       return;
     }
     if (DKEYS.every(k => !C.w[k])) { box.innerHTML = `<p class="cmp-empty">Every dimension is set to 0. Turn at least one back on to see a ranking.</p>`; return; }
-    const top = rows[0], second = rows[1];
-    const gap = top.total - second.total;
-    const headline = top.rank === second.rank
-      ? `<strong>${esc(short(site(top.id)))}</strong> and <strong>${esc(short(site(second.id)))}</strong> tie as the closest match to ${esc(benchName())}.`
-      : `<strong>${esc(short(site(top.id)))}</strong> is the closest match to ${esc(benchName())}${gap >= 10 ? ", by a clear margin" : gap <= 3 ? ", but only just" : ""}.`;
-    box.innerHTML = `<p class="cmp-headline">${headline}</p><ol class="rank">${rows.map(row => {
+    const rated = rows.filter(r => r.rated);
+    let headline;
+    if (!rated.length) headline = `None of the chosen sites is listed as an analog for ${worldName()} in the research sheet.`;
+    else if (rated.length === 1) headline = `<strong>${esc(short(site(rated[0].id)))}</strong> is the only chosen site listed as an analog for ${worldName()}.`;
+    else {
+      const top = rated[0], second = rated[1], gap = top.total - second.total;
+      headline = top.rank === second.rank
+        ? `<strong>${esc(short(site(top.id)))}</strong> and <strong>${esc(short(site(second.id)))}</strong> tie as the closest match to ${esc(benchName())}.`
+        : `<strong>${esc(short(site(top.id)))}</strong> is the closest match to ${esc(benchName())}${gap >= 10 ? ", by a clear margin" : gap <= 3 ? ", but only just" : ""}.`;
+    }
+    box.innerHTML = `${rankedBy()}<p class="cmp-headline">${headline}</p><ol class="rank">${rows.map(row => {
       const s = site(row.id), open = C.expanded.has(row.id);
-      return `<li class="${row.rank === 1 ? "first" : ""}">
-        <div class="rk">${row.rank}</div>
+      return `<li class="${row.rank === 1 ? "first" : ""}${row.rated ? "" : " unrated"}">
+        <div class="rk">${row.rated ? row.rank : "&ndash;"}</div>
         <div class="rmain">
           <div class="rtop">
             <div class="rname"><i class="dot" style="background:${ANALOG_COLORS[s.analog]}"></i><span>${esc(s.name)}</span></div>
-            <div class="rscore">${row.total}<small>/100</small></div>
+            <div class="rscore">${row.rated ? `${row.total}<small>/100</small>` : `<small>not scored</small>`}</div>
           </div>
-          <div class="bar"><span style="width:${row.total}%;background:${C.body === "moon" ? "#bfbcb3" : "var(--mars)"}"></span></div>
-          <div class="rmeta">${esc(s.region)}${row.listed ? ` · <span class="listed">Used as an analog for ${esc(short(benchSite()))} (+${LISTED_BONUS})</span>` : ""}</div>
+          ${row.rated ? `<div class="bar"><span style="width:${row.total}%;background:${C.body === "moon" ? "#bfbcb3" : "var(--mars)"}"></span></div>` : ""}
+          <div class="rmeta">${esc(s.region)}${row.listed ? ` · <span class="listed">Cited twin of ${esc(short(benchSite()))} (+${LISTED_BONUS})</span>` : ""}</div>
           <p class="rwhy">${esc(verdict(row))}</p>
           <div class="ractions">
-            <button class="link" data-expand="${row.id}" aria-expanded="${open}">${open ? "Hide" : "Show"} breakdown</button>
+            ${row.rated ? `<button class="link" data-expand="${row.id}" aria-expanded="${open}">${open ? "Hide" : "Show"} breakdown</button>` : ""}
             <a class="link" href="#site-earth-${row.id}">Learn more →</a>
           </div>
-          ${open ? `<div class="breakdown">${row.parts.map(p => `
+          ${open && row.rated ? `<div class="breakdown">${row.parts.map(p => `
             <div class="brow ${p.w ? "" : "off"}"><span class="bl">${esc(dimLabel(C.body, p.k))}</span>
-              <span class="bb"><span style="width:${p.r * 10}%"></span></span><span class="bv">${p.r}/10</span>
+              <span class="bb"><span style="width:${p.on ? 100 : 0}%"></span></span><span class="bv">${p.on ? "Match" : "&ndash;"}</span>
               <span class="bw" title="Weight">×${p.w}</span></div>`).join("")}</div>` : ""}
         </div>
       </li>`;
@@ -189,8 +213,8 @@
     const on = C.open && C.ids.includes(id);
     el.classList.toggle("in-cmp", on);
     el.classList.toggle("cmp-dim", C.open && !on);
-    if (on && C.ids.length >= 2) el.dataset.rank = (ranks || Object.fromEntries(ranking().map(r => [r.id, r.rank])))[id];
-    else delete el.dataset.rank;
+    const rank = on && C.ids.length >= 2 ? (ranks || Object.fromEntries(ranking().map(r => [r.id, r.rank])))[id] : null;
+    if (rank != null) el.dataset.rank = rank; else delete el.dataset.rank;
   }
 
   // ---------- Actions ----------
