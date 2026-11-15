@@ -906,3 +906,24 @@ const BENCHMARKS = {
     }
   }
 };
+
+// ---------- Map data and software (References page) ----------
+const DATA_SOURCES = [
+  { author: "TWIN team", year: 2026, title: "Earth Analogs for the Moon and Mars: research sheet (89 sites, eight analog dimensions)",
+    publisher: "Unpublished team dataset", url: null, accessed: null, kind: "data" },
+  { author: "USGS Astrogeology Science Center", year: null, title: "Moon LRO LROC WAC Global Morphology Mosaic 100m",
+    publisher: "Astropedia", url: "https://astrogeology.usgs.gov/search/map/moon_lro_lroc_wac_global_morphology_mosaic_100m", accessed: "15 November 2026", kind: "data" },
+  { author: "USGS Astrogeology Science Center", year: null, title: "Mars Viking Colorized Global Mosaic 232m",
+    publisher: "Astropedia", url: "https://astrogeology.usgs.gov/search/map/mars_viking_colorized_global_mosaic_232m", accessed: "15 November 2026", kind: "data" },
+  { author: "NASA", year: null, title: "Moon Trek", publisher: "NASA Solar System Treks", url: "https://trek.nasa.gov/moon/", accessed: "15 November 2026", kind: "data" },
+  { author: "NASA", year: null, title: "Mars Trek", publisher: "NASA Solar System Treks", url: "https://trek.nasa.gov/mars/", accessed: "15 November 2026", kind: "data" },
+  { author: "Natural Earth", year: null, title: "Free vector and raster map data (country boundaries)",
+    publisher: "Natural Earth", url: "https://www.naturalearthdata.com/", accessed: "15 November 2026", kind: "data" },
+  { author: "TopoJSON", year: null, title: "world-atlas: pre-built TopoJSON from Natural Earth",
+    publisher: "GitHub", url: "https://github.com/topojson/world-atlas", accessed: "15 November 2026", kind: "data" }
+];
+const SOFTWARE_SOURCES = [
+  { author: "Asturiano, V.", year: null, title: "globe.gl (version 2.46.2)", publisher: "GitHub", url: "https://github.com/vasturiano/globe.gl", accessed: "15 November 2026", kind: "software" },
+  { author: "Agafonkin, V. and contributors", year: null, title: "Leaflet (version 1.9.4)", publisher: "Leaflet", url: "https://leafletjs.com/", accessed: "15 November 2026", kind: "software" },
+  { author: "Bostock, M.", year: null, title: "topojson-client (version 3.1.0)", publisher: "GitHub", url: "https://github.com/topojson/topojson-client", accessed: "15 November 2026", kind: "software" }
+];

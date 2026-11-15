@@ -61,7 +61,7 @@ const PHOTOS = {
  },
  "earth-svalbard": {
   "src": "assets/photos/earth-svalbard.jpg",
-  "credit": "Public domain",
+  "credit": "Landsat 7 image via NASA World Wind, Public domain",
   "file": "https://commons.wikimedia.org/wiki/File:W_W_Svalbard_LandSat7_21.14475E_78.71545N.png"
  },
  "earth-riotinto": {
@@ -211,7 +211,7 @@ const PHOTOS = {
  },
  "moon-orientale": {
   "src": "assets/photos/moon-orientale.jpg",
-  "credit": "Wikimedia Commons",
+  "credit": "NASA (Artemis II), Public domain",
   "file": "https://commons.wikimedia.org/wiki/File:Mare_Orientale_%28Artemis_2%29.jpg"
  },
  "moon-copernicus": {

@@ -1,6 +1,67 @@
 // "Learn more" detail view, rendered into #detail for #site-<world>-<id>.
 let _miniMap = null;
 
+// ---------- Citations (Harvard style) ----------
+const _esc = s => String(s).replace(/[&<>"']/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
+function citeHTML(s) {
+  const year = s.year == null ? "n.d." : s.year;
+  const body = s.kind === "paper"
+    ? `&lsquo;${_esc(s.title)}&rsquo;, <em>${_esc(s.publisher)}</em>.`
+    : `<em>${_esc(s.title)}</em>. ${_esc(s.publisher)}.`;
+  const link = s.url
+    ? ` Available at: <a href="${_esc(s.url)}" target="_blank" rel="noopener">${_esc(s.url)}</a>${s.accessed ? ` (Accessed: ${_esc(s.accessed)})` : ""}.`
+    : "";
+  return `${_esc(s.author)} (${year}) ${body}${link}`;
+}
+const byAuthor = (a, b) => a.author.localeCompare(b.author) || (a.year || 9999) - (b.year || 9999) || a.title.localeCompare(b.title);
+function sourcesHTML(list) {
+  return list.length
+    ? `<ol class="cites">${[...list].sort(byAuthor).map(s => `<li>${citeHTML(s)}</li>`).join("")}</ol>`
+    : `<p class="note">Citation pending.</p>`;
+}
+
+// #references: every citation on the site in one place.
+function renderReferences() {
+  document.title = "References · TWIN";
+  // Which sites use each source.
+  const usedBy = new Map();
+  for (const body of Object.keys(BODIES)) for (const site of BODIES[body].sites) for (const src of site.sources) {
+    if (!usedBy.has(src)) usedBy.set(src, []);
+    usedBy.get(src).push({ body, site });
+  }
+  const short = x => x.name.split(/[,(&:]/)[0].trim();
+  const cited = [...usedBy.keys()].sort(byAuthor);
+  const pending = [];
+  for (const body of Object.keys(BODIES)) for (const site of BODIES[body].sites) if (!site.sources.length) pending.push({ body, site });
+  const photos = [];
+  for (const body of Object.keys(BODIES)) for (const site of BODIES[body].sites) {
+    const ph = PHOTOS[`${body}-${site.id}`];
+    if (ph) photos.push({ body, site, ph });
+  }
+  const plain = list => `<ol class="cites">${[...list].sort(byAuthor).map(s => `<li>${citeHTML(s)}</li>`).join("")}</ol>`;
+  document.getElementById("detail").innerHTML = `
+    <header class="refs-head">
+      <a class="refs-back" href="#earth"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M15 18l-6-6 6-6"/></svg>Back to the globe</a>
+      <h1>References</h1>
+      <p>Every source used on TWIN, in Harvard style. ${cited.length} sources back the ${EARTH_SITES.length} Earth sites and ${MOON_SITES.length + MARS_SITES.length} Moon and Mars places; each one lists the pages that rely on it.</p>
+      <nav class="refs-nav"><a href="#refs-sites">Sites and missions</a><a href="#refs-photos">Photographs</a><a href="#refs-data">Maps and data</a><a href="#refs-software">Software</a></nav>
+    </header>
+    <div class="refs-wrap">
+      <section id="refs-sites"><h2>Sites and missions</h2>
+        <ol class="cites">${cited.map(src => `<li>${citeHTML(src)}
+          <span class="usedby">Used for: ${usedBy.get(src).map(u => `<a href="#site-${u.body}-${u.site.id}">${_esc(short(u.site))}</a>`).join(", ")}</span></li>`).join("")}</ol>
+        ${pending.length ? `<p class="note">Citation pending for: ${pending.map(u => `<a href="#site-${u.body}-${u.site.id}">${_esc(short(u.site))}</a>`).join(", ")}.</p>` : ""}
+      </section>
+      <section id="refs-photos"><h2>Photographs</h2>
+        <p class="note">All photographs are from Wikimedia Commons. Each entry gives the creator and licence as recorded on the file page.</p>
+        <ol class="cites">${photos.map(({ body, site, ph }) => `<li>${_esc(ph.credit)}. <em>Photograph used for ${_esc(short(site))}</em>. Wikimedia Commons. Available at: <a href="${_esc(ph.file)}" target="_blank" rel="noopener">${_esc(decodeURIComponent(ph.file))}</a>.</li>`).join("")}</ol>
+      </section>
+      <section id="refs-data"><h2>Maps and data</h2>${plain(DATA_SOURCES)}</section>
+      <section id="refs-software"><h2>Software</h2>${plain(SOFTWARE_SOURCES)}</section>
+    </div>
+    <footer>TWIN — Terrestrial World Identification Network.</footer>`;
+}
+
 function renderDetail(body, id) {
   const esc = s => String(s).replace(/[&<>"]/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]));
   const s = findSite(body, id);
@@ -82,6 +143,9 @@ function renderDetail(body, id) {
       <ul class="limits">${relevant.map(([k, v]) => `<li><b>${esc(k)}.</b> ${esc(v)}</li>`).join("")}</ul></section>`;
   }
 
+  html += `<section class="sources"><h2>Sources</h2>${sourcesHTML(s.sources)}
+    <p class="note"><a href="#references">See all references</a></p></section>`;
+
   // At a glance
   const glance = body === "earth"
     ? row("Location", esc(s.region)) + row("Type", esc(s.category)) +
@@ -123,7 +187,7 @@ function renderDetail(body, id) {
     </nav>
     <footer>
       TWIN — Terrestrial World Identification Network. Earth site data from the "Earth Analogs for the Moon and Mars" sheet; coordinates are approximate site centres.
-      Photos from Wikipedia / Wikimedia Commons, credited on each image. Moon: LRO WAC mosaic; Mars: Viking MDIM 2.1 colour mosaic (NASA Moon Trek / Mars Trek). Borders: Natural Earth.
+      Photos from Wikipedia / Wikimedia Commons, credited on each image. Moon: LRO WAC mosaic; Mars: Viking MDIM 2.1 colour mosaic (NASA Moon Trek / Mars Trek). Borders: Natural Earth. <a href="#references">References</a>.
     </footer>`;
 
   // Minimap

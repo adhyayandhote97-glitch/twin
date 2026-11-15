@@ -344,3 +344,28 @@ aside.glance { position: sticky; top: 24px; align-self: start; }
   .wrow { grid-template-columns: 1fr 110px 30px; }
   .brow { grid-template-columns: 1fr 70px 40px 30px; }
 }
+
+/* ---------- Sources and references ---------- */
+.refs-link { display: inline-block; margin: -12px 0 24px; color: #d6d6d6; font-size: 13.5px; letter-spacing: 0.04em; text-decoration: underline; text-underline-offset: 4px; text-decoration-color: #555; }
+.refs-link:hover { color: #fff; text-decoration-color: #fff; }
+.detail .cites { margin: 0; padding-left: 0; list-style: none; }
+.detail .cites li { font-size: 15.5px; line-height: 1.6; margin: 0 0 12px; padding-left: 2em; text-indent: -2em; overflow-wrap: anywhere; }
+.detail .cites a { color: #1a4d8f; }
+.detail .cites .usedby { display: block; text-indent: 0; font-size: 13px; color: #666; margin-top: 2px; }
+.detail .cites .usedby a { color: #555; }
+.detail .note a { color: inherit; }
+.detail footer a { color: #bbb; }
+.refs-head { background: #000; color: #fff; padding: 26px 48px 44px; }
+.refs-back { color: #fff; text-decoration: none; letter-spacing: 0.12em; font-size: 13.5px; font-weight: 600; text-transform: uppercase; display: inline-flex; gap: 10px; align-items: center; }
+.refs-back:hover { text-decoration: underline; text-underline-offset: 4px; }
+.refs-head h1 { font-family: var(--serif); font-weight: 400; font-size: 56px; margin: 56px 0 14px; }
+.refs-head p { max-width: 760px; font-size: 18px; line-height: 1.6; color: #cfcfcf; margin: 0 0 26px; }
+.refs-nav { display: flex; flex-wrap: wrap; gap: 8px 22px; }
+.refs-nav a { color: #fff; font-size: 14px; letter-spacing: 0.06em; text-underline-offset: 4px; }
+.refs-wrap { max-width: 980px; margin: 0 auto; padding: 48px 48px 72px; }
+.refs-wrap section { margin-bottom: 52px; }
+.refs-wrap h2 { font-family: var(--serif); font-weight: 400; font-size: 30px; margin: 0 0 18px; padding-bottom: 12px; border-bottom: 1px solid var(--card-line); }
+@media (max-width: 900px) {
+  .refs-head { padding: 22px 22px 34px; } .refs-head h1 { font-size: 40px; margin-top: 36px; }
+  .refs-wrap { padding: 32px 22px 56px; }
+}

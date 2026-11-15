@@ -2,6 +2,7 @@
 //   #earth | #moon | #mars                 world view
 //   #earth-<id> | #moon-<id> | #mars-<id>  world view with a site card open
 //   #site-<world>-<id>                     "Learn more" detail view
+//   #references                            every citation on the site
 (function () {
   const KIND = {
     "Impact crater": "Impact craters",
@@ -378,6 +379,15 @@
   // ---------- Router ----------
   function route() {
     const h = decodeURIComponent(location.hash.replace("#", ""));
+    if (h === "references" || h.startsWith("refs-")) {
+      const fresh = document.title !== "References · TWIN";
+      document.body.classList.add("detail-mode");
+      $("app").hidden = true; $("detail").hidden = false;
+      if (fresh) renderReferences();
+      const target = h.startsWith("refs-") && document.getElementById(h);
+      if (target) target.scrollIntoView(); else window.scrollTo(0, 0);
+      return;
+    }
     const m = h.match(/^site-(earth|moon|mars)-([a-z0-9]+)$/);
     if (m && findSite(m[1], m[2])) {
       document.body.classList.add("detail-mode");
