@@ -1,7 +1,10 @@
 // Data for the TWIN (Terrestrial World Identification Network).
 // Earth sites: the 20 strongest analogs from the "Earth Analogs for the Moon and Mars" sheet
 // (ranked by how many of the 8 analog dimensions each site matches, keeping a mix of Moon, Mars and Both).
-// Coordinates are approximate site centres in decimal degrees. Moon and Mars longitudes are east-positive (-180..180).
+// Coordinates are in decimal degrees. Earth: approximate site centres (WGS84).
+// Moon and Mars: planetocentric latitude, east-positive longitude in the range -180..180.
+// Named features use the centre given in the IAU/USGS Gazetteer of Planetary Nomenclature (Mars values
+// converted from 0..360 by subtracting 360 above 180); landing sites use the published landing position.
 
 const DIMENSIONS = [
   { key: "geo", label: "Geology & mineralogy" },
@@ -559,7 +562,7 @@ const MOON_SITES = [
     id: "shackleton", name: "Shackleton crater & south pole", type: "Polar crater", status: "future",
     twins: [], twinReason: null,
     sources: [SRC.zuber2012, SRC.gazShackleton],
-    lat: -89.6, lng: 129.8, wiki: ["Shackleton_(crater)", "Lunar_south_pole"],
+    lat: -89.67, lng: 129.78, wiki: ["Shackleton_(crater)", "Lunar_south_pole"],
     explored: "Artemis candidate region; mapped by LRO, Chandrayaan-2",
     summary: "A 21 km crater almost exactly at the south pole, its floor in permanent shadow.",
     details: "The Sun never rises above the rim of Shackleton's floor, so it is one of the coldest places in the Solar System and may hold water ice. Its rim gets near-constant sunlight, which makes the region a prime target for Artemis bases. The terrain is highlands anorthosite, lit by sunlight skimming the horizon. No place on Earth matches the ~40 K cold of its shadowed floor.",
@@ -581,7 +584,7 @@ const MOON_SITES = [
     id: "tycho", name: "Tycho crater", type: "Fresh rayed crater", status: "landed",
     twins: [], twinReason: null,
     sources: [SRC.gazTycho, SRC.nssSurveyor7],
-    lat: -43.31, lng: -11.36, wiki: ["Tycho_(crater)", "Surveyor_7"],
+    lat: -43.30, lng: -11.22, wiki: ["Tycho_(crater)", "Surveyor_7"],
     explored: "Surveyor 7 landed on its ejecta (1968)",
     summary: "An 85 km young crater whose bright rays stretch across the near side.",
     details: "About 100 million years old, Tycho is one of the youngest large craters on the Moon. Its rays of bright, freshly broken rock show how ejecta spreads out from an impact before it is darkened by space weathering.",
@@ -603,7 +606,7 @@ const MOON_SITES = [
     id: "orientale", name: "Mare Orientale", type: "Multi-ring basin", status: "orbital",
     twins: [], twinReason: null,
     sources: [SRC.gazOrientale],
-    lat: -19.4, lng: -92.8, wiki: ["Mare_Orientale"],
+    lat: -19.87, lng: -94.67, wiki: ["Mare_Orientale"],
     explored: "Mapped by LRO and GRAIL",
     summary: "A bullseye of three mountain rings, the best-preserved large basin on the Moon.",
     details: "Orientale is about 930 km across and only partly flooded with lava, so its rings and melt sheet are exposed. It is the reference example for how giant impacts build multi-ring basins.",
@@ -628,7 +631,7 @@ const MARS_SITES = [
     id: "jezero", name: "Jezero crater", type: "Crater paleolake & delta", status: "landed",
     twins: ["lonar"], twinReason: "A crater lake fed through an inlet valley is matched by Lonar Crater and its lake.",
     sources: [SRC.gazJezero, SRC.nssM2020, SRC.mangold2021, SRC.farley2022, SRC.bamber2023],
-    lat: 18.38, lng: 77.58, wiki: ["Jezero_(crater)", "Perseverance_(rover)"],
+    lat: 18.41, lng: 77.69, wiki: ["Jezero_(crater)", "Perseverance_(rover)"],
     explored: "Perseverance rover (2021–)",
     summary: "A 45 km crater that once held a lake, with a river delta on its western rim.",
     details: "Perseverance is collecting rock cores here for future return to Earth. The delta and lake-bed sediments, and carbonates around the rim, are the best places on Mars to look for preserved signs of ancient microbial life.",
@@ -694,7 +697,7 @@ const MARS_SITES = [
     id: "medusae", name: "Medusae Fossae Formation", type: "Wind-eroded deposit", status: "orbital",
     twins: ["qaidam"], twinReason: "Wind-carved yardangs are matched by the yardang fields of the Qaidam Basin.",
     sources: [SRC.gazMedusae, SRC.ojha2018, SRC.xiao2017],
-    lat: -3, lng: -160, wiki: ["Medusae_Fossae_Formation"],
+    lat: -2.17, lng: -164.2, wiki: ["Medusae_Fossae_Formation"],
     explored: "Mapped by MRO, Mars Express radar",
     summary: "A huge, soft deposit carved by wind into ridges called yardangs.",
     details: "This deposit stretches over 5,000 km along the equator and is likely made of volcanic ash. Wind has sculpted it into parallel ridges and grooves, the largest yardang fields in the Solar System. It is also the biggest single source of dust on Mars.",
@@ -705,7 +708,7 @@ const MARS_SITES = [
     id: "boreum", name: "Planum Boreum (north polar cap)", type: "Polar ice cap", status: "orbital",
     twins: [], twinReason: null,
     sources: [SRC.gazBoreum, SRC.phillips2008],
-    lat: 86, lng: 15, wiki: ["Planum_Boreum", "Martian_polar_ice_caps"],
+    lat: 87.32, lng: 54.96, wiki: ["Planum_Boreum", "Martian_polar_ice_caps"],
     explored: "Mapped by MRO SHARAD radar and Mars Express",
     summary: "A 3 km thick dome of water ice layered with dust.",
     details: "Radar shows the cap is built from many layers of ice and dust, recording swings in Mars' climate over millions of years. Spiral troughs cut by wind wind across its surface.",
@@ -716,7 +719,7 @@ const MARS_SITES = [
     id: "nili", name: "Nili Fossae", type: "Mineral-rich troughs", status: "orbital",
     twins: ["svalbard"], twinReason: "Carbonate-bearing rocks formed where water altered volcanic rock are matched by the Bockfjorden volcanic complex on Svalbard.",
     sources: [SRC.gazNili, SRC.ehlmann2008, SRC.treiman2002],
-    lat: 22, lng: 75, wiki: ["Nili_Fossae"],
+    lat: 22.02, lng: 76.69, wiki: ["Nili_Fossae"],
     explored: "Mapped by MRO CRISM; candidate landing site",
     summary: "Troughs exposing olivine, clays and carbonates, plus possible methane sources.",
     details: "Nili Fossae holds some of the clearest signs on Mars of olivine-rich rock reacting with water to form serpentine and carbonates, the same process that makes hydrogen and methane on Earth. It was a finalist landing site for Perseverance.",
@@ -760,7 +763,7 @@ const MARS_SITES = [
     id: "newton", name: "Newton crater slopes", type: "Recurring slope lineae", status: "orbital",
     twins: ["dryvalleys"], twinReason: "Seasonal dark streaks on warm slopes are matched by the brine-fed water tracks at Don Juan Pond in the Dry Valleys.",
     sources: [SRC.gazNewton, SRC.mcewen2011, SRC.dundas2017, SRC.dickson2013],
-    lat: -41.1, lng: -158, wiki: ["Recurring_slope_lineae", "Newton_(Martian_crater)"],
+    lat: -40.5, lng: -158.03, wiki: ["Recurring_slope_lineae", "Newton_(Martian_crater)"],
     explored: "Imaged by MRO HiRISE",
     summary: "Dark streaks that appear on warm slopes each season.",
     details: "When first spotted these streaks were thought to be flows of salty water. Later work suggests they may be dry sand flows, but the debate shows why scientists study brines that stay liquid far below 0 °C on Earth.",
