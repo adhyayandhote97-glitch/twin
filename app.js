@@ -437,7 +437,7 @@
   $("cmp-open").addEventListener("click", () => { if (state.selected) close(); });
   // ---------- Resizable sidebar ----------
   (function sidebarResizer() {
-    const app = $("app"), handle = $("resizer"), KEY = "twin-sidebar-w", DEFAULT = 420, MIN = 300;
+    const app = $("app"), handle = $("resizer"), KEY = "twin-sidebar-w", DEFAULT = window.innerWidth <= 1200 ? 340 : 420, MIN = 300;
     const maxW = () => Math.max(MIN, Math.min(720, window.innerWidth * 0.6));
     const clamp = w => Math.round(Math.min(maxW(), Math.max(MIN, w)));
     let width = DEFAULT, frame = 0;
