@@ -210,6 +210,7 @@
   }
 
   // ---------- 3D globe (Earth, Moon, Mars) ----------
+  let globeShown = false;
   function initGlobe(body) {
     if (!globe) {
       globe = Globe({ animateIn: false })($("globe"))
@@ -262,7 +263,11 @@
     globe.polygonsData(isEarth ? countries : []);
     labelTier = -1; visSites = []; curLabels = [];
     globe.htmlElementsData([]);
-    globe.pointOfView({ ...START[body], altitude: 2.6 }, 0);
+    // Arrive from further out unless the visitor prefers reduced motion.
+    const calm = !globeShown || matchMedia("(prefers-reduced-motion: reduce)").matches;
+    globe.pointOfView({ ...START[body], altitude: calm ? 2.6 : 4.4 }, 0);
+    if (!calm) globe.pointOfView({ ...START[body], altitude: 2.6 }, 1100);
+    globeShown = true;
     updateLabels(true);
   }
 
@@ -373,7 +378,10 @@
     $("search").placeholder = body === "earth" ? "Find a site" : body === "moon" ? "Find a place on the Moon" : "Find a place on Mars";
     $("card").hidden = true;
     $("mapwrap").className = "map-wrap " + body;
+    const g = $("globe");
+    g.classList.add("entering");
     initGlobe(body); sizeGlobe();
+    setTimeout(() => g.classList.remove("entering"), 40);
     renderFilters(); renderLegend(); applyFilters();
   }
 

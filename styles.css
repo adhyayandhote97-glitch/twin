@@ -377,3 +377,16 @@ aside.glance { position: sticky; top: 24px; align-self: start; }
 .rank li.unrated .rscore small { font-size: 12px; letter-spacing: .04em; text-transform: uppercase; }
 .cmp-method a { color: inherit; }
 .refs-wrap.about p { max-width: 720px; font-size: 17px; line-height: 1.7; margin: 0; }
+
+/* Transitions */
+#globe { transition: opacity .5s ease; }
+#globe.entering { opacity: 0; transition: none; }
+@keyframes fade-in { from { opacity: 0; } to { opacity: 1; } }
+@keyframes fade-up { from { opacity: 0; transform: translateY(12px); } to { opacity: 1; transform: none; } }
+.detail:not([hidden]) > * { animation: fade-in .35s ease both; }
+.detail:not([hidden]) .hero, .detail:not([hidden]) .refs-head h1 { animation: fade-up .45s ease both; }
+.app:not([hidden]) { animation: fade-in .35s ease both; }
+#list { animation: fade-in .3s ease; }
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { animation-duration: .01ms !important; animation-iteration-count: 1 !important; transition-duration: .01ms !important; scroll-behavior: auto !important; }
+}
