@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>TWIN · Terrestrial World Identification Network (Copy)</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Libre+Caslon+Text&display=swap">
+  <link rel="stylesheet" href="assets/leaflet.css">
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <div class="app" id="app">
+    <aside class="sidebar">
+      <div class="brand"><svg class="brand-mark" viewBox="0 0 64 40" aria-hidden="true">
+          <defs>
+            <radialGradient id="tw-earth" cx="35%" cy="32%" r="75%"><stop offset="0" stop-color="#8fc0ff"/><stop offset=".55" stop-color="#2f6fd0"/><stop offset="1" stop-color="#143a78"/></radialGradient>
+            <radialGradient id="tw-twin" cx="35%" cy="32%" r="75%"><stop offset="0" stop-color="#ffb08f"/><stop offset=".55" stop-color="#d9482b"/><stop offset="1" stop-color="#7c2212"/></radialGradient>
+            <clipPath id="tw-clip"><circle cx="21" cy="20" r="17"/></clipPath>
+          </defs>
+          <circle cx="21" cy="20" r="17" fill="url(#tw-earth)"/>
+          <circle cx="43" cy="20" r="17" fill="url(#tw-twin)"/>
+          <circle cx="43" cy="20" r="17" fill="#f2c230" clip-path="url(#tw-clip)"/>
+          <circle cx="21" cy="20" r="17" fill="none" stroke="#000" stroke-opacity=".25" stroke-width="1"/>
+        </svg><span class="brand-name">TWIN</span></div>
+      <h1>Terrestrial World Identification Network</h1>
+      <p class="sub" id="subtitle"></p>
+      <hr class="rule">
+      <div class="count-row">
+        <span class="count" id="count"></span>
+        <button class="reset" id="reset">RESET
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 12a9 9 0 1 0 3-6.7"/><path d="M3 4v5h5"/></svg>
+        </button>
+      </div>
+      <div class="search">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#bbb" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="m20 20-4-4"/></svg>
+        <input id="search" type="search" placeholder="Find a site" autocomplete="off">
+      </div>
+      <div id="filters"></div>
+      <hr class="rule">
+      <div id="list"></div>
+    </aside>
+
+    <div class="resizer" id="resizer" role="separator" aria-orientation="vertical" aria-label="Resize sidebar" tabindex="0"
+         title="Drag to resize · double-click to reset"></div>
+    <main class="map-wrap" id="mapwrap">
+      
+      <div id="globe"></div>
+      <nav class="topnav" aria-label="Choose a world">
+        <button class="tab" data-body="earth"><span class="planet" style="background:radial-gradient(circle at 35% 35%,#7fb3ff,#1f5fa8)"></span>Earth</button>
+        <button class="tab" data-body="moon"><span class="planet" style="background:radial-gradient(circle at 35% 35%,#fff,#888)"></span>Moon</button>
+        <button class="tab" data-body="mars"><span class="planet" style="background:radial-gradient(circle at 35% 35%,#ff9a6b,#a3301a)"></span>Mars</button>
+      </nav>
+      <div class="legend" id="legend"></div>
+      <div class="zoom">
+        <button id="zin" aria-label="Zoom in">+</button>
+        <button id="zout" aria-label="Zoom out">&minus;</button>
+      </div>
+      <article class="card" id="card" hidden></article>
+      <button class="cmp-open" id="cmp-open"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M5 20V10M12 20V4M19 20v-7"/></svg>Compare &amp; rank sites</button>
+      <aside class="card compare" id="compare" hidden aria-label="Compare and rank sites"></aside>
+    </main>
+  </div>
+
+  <div id="detail" class="detail" hidden></div>
+
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/topojson-client@3.1.0/dist/topojson-client.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/globe.gl@2.46.2/dist/globe.gl.min.js"></script>
+  <script src="assets/world.js"></script>
+  <script src="assets/photos.js"></script>
+  <script src="data.js"></script>
+  <script src="detail.js"></script>
+  <script src="compare.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>
