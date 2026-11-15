@@ -4,6 +4,7 @@
 //   #site-<world>-<id>                     "Learn more" detail view
 //   #references                            every citation on the site
 //   #about                                 method and limits
+//   #sky                                   live Moon and Mars figures, star map
 (function () {
   const KIND = {
     "Impact crater": "Impact craters",
@@ -269,7 +270,35 @@
     if (!calm) globe.pointOfView({ ...START[body], altitude: 2.6 }, 1100);
     globeShown = true;
     updateLabels(true);
+    drawSky(body);
   }
+
+  // ---------- Live day/night line (Moon, Mars) ----------
+  const utcClock = d => d.toISOString().slice(11, 16) + " UTC";
+  function drawSky(body) {
+    const box = $("live");
+    const now = new Date();
+    const sky = body === "moon" ? Live.moon(now) : body === "mars" ? Live.mars(now) : null;
+    if (!sky) { globe.pathsData([]).pointsData([]); box.hidden = true; return; }
+    globe.pathsData([{ pts: Live.terminator(sky.subsolar) }])
+      .pathPoints("pts").pathPointLat(p => p[0]).pathPointLng(p => p[1]).pathPointAlt(0.006)
+      .pathColor(() => "rgba(255, 214, 102, 0.9)").pathStroke(1.6).pathTransitionDuration(0);
+    globe.pointsData([sky.subsolar]).pointLat("lat").pointLng("lng").pointAltitude(0.012).pointRadius(1.3)
+      .pointColor(() => "#ffd666").pointsTransitionDuration(0);
+    let lines;
+    if (body === "moon") {
+      lines = [`Moon: ${sky.name.toLowerCase()}, ${Math.round(sky.illuminated * 100)}% lit`];
+    } else {
+      const em = Live.earthMars(now);
+      const mtc = sky.mst, hh = String(Math.floor(mtc)).padStart(2, "0"), mm = String(Math.floor((mtc % 1) * 60)).padStart(2, "0");
+      lines = [`Mars time at 0° longitude: ${hh}:${mm} · season Ls ${Math.round(sky.Ls)}°`];
+      if (em) lines.push(`${em.au.toFixed(2)} AU from Earth · a signal takes ${Math.floor(em.lightSeconds / 60)} min ${Math.round(em.lightSeconds % 60)} s`);
+    }
+    box.innerHTML = `<strong>Live · ${esc(utcClock(now))}</strong>${lines.map(l => `<span>${esc(l)}</span>`).join("")}
+      <span class="live-key"><i></i>Day/night line now · <i class="sun"></i>Sun overhead</span><a href="#sky">Live sky &rarr;</a>`;
+    box.hidden = false;
+  }
+  setInterval(() => { if (globe && state.body !== "earth" && !document.body.classList.contains("detail-mode")) drawSky(state.body); }, 60000);
 
   // globe.gl keeps the last photo texture when the image URL is cleared, so
   // strip it and colour the sphere as ocean (re-run once late in case a
@@ -395,6 +424,12 @@
       if (fresh) renderReferences();
       const target = h.startsWith("refs-") && document.getElementById(h);
       if (target) target.scrollIntoView(); else window.scrollTo(0, 0);
+      return;
+    }
+    if (h === "sky") {
+      document.body.classList.add("detail-mode");
+      $("app").hidden = true; $("detail").hidden = false;
+      renderSky(); window.scrollTo(0, 0);
       return;
     }
     if (h === "about") {

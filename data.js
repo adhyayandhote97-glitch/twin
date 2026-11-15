@@ -912,10 +912,22 @@ const DATA_SOURCES = [
   { author: "Natural Earth", year: null, title: "Free vector and raster map data (country boundaries)",
     publisher: "Natural Earth", url: "https://www.naturalearthdata.com/", accessed: "15 November 2026", kind: "data" },
   { author: "TopoJSON", year: null, title: "world-atlas: pre-built TopoJSON from Natural Earth",
-    publisher: "GitHub", url: "https://github.com/topojson/world-atlas", accessed: "15 November 2026", kind: "data" }
+    publisher: "GitHub", url: "https://github.com/topojson/world-atlas", accessed: "15 November 2026", kind: "data" },
+  // Live sky (computed in the page)
+  { author: "Espenak, F.", year: null, title: "Phases of the Moon: 2001 to 2100",
+    publisher: "NASA Goddard Space Flight Center", url: "https://eclipse.gsfc.nasa.gov/phase/phases2001.html", accessed: "15 November 2026", kind: "data" },
+  { author: "Allison, M. and McEwen, M.", year: 2000, title: "A post-Pathfinder evaluation of areocentric solar coordinates with improved timing recipes for Mars seasonal/diurnal climate studies",
+    publisher: "Planetary and Space Science", url: "https://doi.org/10.1016/s0032-0633(99)00092-6", accessed: "15 November 2026", kind: "paper" },
+  { author: "NASA Goddard Institute for Space Studies", year: 2025, title: "Mars24 Sunclock: Algorithm and Worked Examples",
+    publisher: "NASA GISS", url: "https://www.giss.nasa.gov/tools/mars24/help/algorithm.html", accessed: "15 November 2026", kind: "data" },
+  { author: "Standish, E.M. and Williams, J.G.", year: null, title: "Approximate Positions of the Planets",
+    publisher: "NASA Jet Propulsion Laboratory, Solar System Dynamics", url: "https://ssd.jpl.nasa.gov/planets/approx_pos.html", accessed: "15 November 2026", kind: "data" },
+  { author: "Bureau International des Poids et Mesures", year: 2019, title: "The International System of Units (SI), 9th edition",
+    publisher: "BIPM", url: "https://www.bipm.org/en/publications/si-brochure", accessed: "15 November 2026", kind: "data" }
 ];
 const SOFTWARE_SOURCES = [
   { author: "Asturiano, V.", year: null, title: "globe.gl (version 2.46.2)", publisher: "GitHub", url: "https://github.com/vasturiano/globe.gl", accessed: "15 November 2026", kind: "software" },
   { author: "Agafonkin, V. and contributors", year: null, title: "Leaflet (version 1.9.4)", publisher: "Leaflet", url: "https://leafletjs.com/", accessed: "15 November 2026", kind: "software" },
-  { author: "Bostock, M.", year: null, title: "topojson-client (version 3.1.0)", publisher: "GitHub", url: "https://github.com/topojson/topojson-client", accessed: "15 November 2026", kind: "software" }
+  { author: "Bostock, M.", year: null, title: "topojson-client (version 3.1.0)", publisher: "GitHub", url: "https://github.com/topojson/topojson-client", accessed: "15 November 2026", kind: "software" },
+  { author: "Stellarium Web", year: null, title: "Stellarium Web Online Star Map", publisher: "Stellarium Web", url: "https://stellarium-web.org/", accessed: "15 November 2026", kind: "software" }
 ];

@@ -62,6 +62,57 @@ function renderReferences() {
     <footer>TWIN — Terrestrial World Identification Network.</footer>`;
 }
 
+function renderSky() {
+  document.title = "Live sky · TWIN";
+  const live = DATA_SOURCES.slice(-5);
+  const stel = SOFTWARE_SOURCES[SOFTWARE_SOURCES.length - 1];
+  document.getElementById("detail").innerHTML = `
+    <header class="refs-head">
+      <a class="refs-back" href="#earth"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M15 18l-6-6 6-6"/></svg>Back to the globe</a>
+      <h1>Live sky</h1>
+      <p>Where the Moon and Mars are right now. Every figure is worked out in your browser from published NASA and JPL formulas, so nothing is fetched and nothing is tracked. The Moon and Mars globes draw the same day/night line.</p>
+    </header>
+    <div class="refs-wrap about">
+      <section><h2>Right now</h2><div class="sky-grid" id="sky-grid"></div></section>
+      <section><h2>Tonight's sky</h2>
+        <p>Stellarium Web is a free planetarium that shows the stars and planets above you in real time. It is run by a third party, so it only loads if you ask for it.</p>
+        <div class="sky-frame" id="sky-frame"><button class="learn" id="sky-load" type="button">SHOW THE LIVE STAR MAP</button></div>
+        <p class="note"><a href="https://stellarium-web.org/" target="_blank" rel="noopener">Open Stellarium Web in a new tab</a></p>
+      </section>
+      <section><h2>How the numbers are worked out</h2>
+        <p>Moon phase: interpolated between NASA's tabulated times of new Moon, first quarter, full Moon and last quarter (2026 to 2028). Mars season, Mars time and the point where the Sun is overhead: the NASA GISS Mars24 algorithm. Earth&ndash;Mars distance: JPL's approximate planetary positions (valid 1800 to 2050), with signal time at the speed of light. The Moon's day/night line ignores libration, so it can be off by up to about 8&deg; of longitude. Outside a formula's valid range the figure is shown as &ldquo;n.d.&rdquo;.</p>
+        <ol class="cites">${[...live, stel].sort(byAuthor).map(s => `<li>${citeHTML(s)}</li>`).join("")}</ol>
+      </section>
+    </div>
+    <footer>TWIN &mdash; Terrestrial World Identification Network. <a href="#about">About</a> &middot; <a href="#references">References</a></footer>`;
+  document.getElementById("sky-load").addEventListener("click", () => {
+    const f = document.createElement("iframe");
+    f.src = "https://stellarium-web.org/"; f.title = "Stellarium Web live star map";
+    f.referrerPolicy = "no-referrer"; f.allow = "fullscreen; geolocation";
+    document.getElementById("sky-frame").replaceChildren(f);
+  });
+  const fig = (k, v, n) => `<div class="sky-fig"><span class="k">${k}</span><span class="v">${v}</span>${n ? `<span class="n">${n}</span>` : ""}</div>`;
+  const tick = () => {
+    const grid = document.getElementById("sky-grid");
+    if (!grid) { clearInterval(timer); return; }
+    const now = new Date(), m = Live.moon(now), r = Live.mars(now), em = Live.earthMars(now);
+    const hm = h => `${String(Math.floor(h)).padStart(2, "0")}:${String(Math.floor((h % 1) * 60)).padStart(2, "0")}`;
+    const ll = p => `${Math.abs(p.lat).toFixed(1)}&deg; ${p.lat < 0 ? "S" : "N"}, ${Math.abs(p.lng).toFixed(1)}&deg; ${p.lng < 0 ? "W" : "E"}`;
+    grid.innerHTML = [
+      fig("Time now", now.toISOString().slice(0, 19).replace("T", " ") + " UTC"),
+      fig("Moon phase", m ? m.name : "n.d.", m ? `${Math.round(m.illuminated * 100)}% of the near side lit` : ""),
+      fig("Sun overhead on the Moon", m ? ll(m.subsolar) : "n.d.", "Approximate, ignores libration"),
+      fig("Mars time at 0&deg; longitude", hm(r.mst), "Mean solar time (Coordinated Mars Time)"),
+      fig("Mars season", `L<sub>s</sub> ${r.Ls.toFixed(1)}&deg;`, "0&deg; is the start of northern spring"),
+      fig("Sun overhead on Mars", ll(r.subsolar)),
+      fig("Earth to Mars", em ? `${(em.km / 1e6).toFixed(1)} million km` : "n.d.", em ? `${em.au.toFixed(3)} AU` : ""),
+      fig("Signal time, one way", em ? `${Math.floor(em.lightSeconds / 60)} min ${Math.round(em.lightSeconds % 60)} s` : "n.d.", "At the speed of light")
+    ].join("");
+  };
+  const timer = setInterval(tick, 1000);
+  tick();
+}
+
 function renderAbout() {
   document.title = "About · TWIN";
   const all = [...EARTH_SITES, ...MOON_SITES, ...MARS_SITES];

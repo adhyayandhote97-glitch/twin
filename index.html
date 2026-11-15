@@ -4,7 +4,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>TWIN · Terrestrial World Identification Network</title>
-  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob:; font-src 'self'; connect-src 'self'; worker-src 'self' blob:; object-src 'none'; base-uri 'self'; form-action 'none'">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob:; font-src 'self'; connect-src 'self'; worker-src 'self' blob:; frame-src https://stellarium-web.org; object-src 'none'; base-uri 'self'; form-action 'none'">
   <meta name="referrer" content="strict-origin-when-cross-origin">
   <meta name="description" content="TWIN matches places on Earth to places on the Moon and Mars, so astronauts and rovers can practise here first. Every pairing cites its sources.">
   <meta property="og:type" content="website">
@@ -33,7 +33,7 @@
       <h1>Terrestrial World Identification Network</h1>
       <p class="tagline">We match places on Earth to places on the Moon and Mars, so astronauts and rovers can practise here first.</p>
       <p class="sub" id="subtitle"></p>
-      <a class="refs-link" href="#about">About</a><a class="refs-link" href="#references">Sources and references &rarr;</a>
+      <a class="refs-link" href="#sky">Live sky</a><a class="refs-link" href="#about">About</a><a class="refs-link" href="#references">Sources and references &rarr;</a>
       <hr class="rule">
       <div class="count-row">
         <span class="count" id="count"></span>
@@ -61,6 +61,7 @@
         <button class="tab" data-body="mars"><span class="planet" style="background:radial-gradient(circle at 35% 35%,#ff9a6b,#a3301a)"></span>Mars</button>
       </nav>
       <div class="legend" id="legend"></div>
+      <div class="live" id="live" hidden></div>
       <div class="zoom">
         <button id="zin" aria-label="Zoom in">+</button>
         <button id="zout" aria-label="Zoom out">&minus;</button>
@@ -79,6 +80,7 @@
   <script src="assets/world.js"></script>
   <script src="assets/photos.js"></script>
   <script src="data.js"></script>
+  <script src="live.js"></script>
   <script src="detail.js"></script>
   <script src="compare.js"></script>
   <script src="app.js"></script>
